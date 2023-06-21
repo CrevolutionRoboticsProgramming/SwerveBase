@@ -7,6 +7,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.CrevoLib.defaultconfigs.CTREConfigs;
+
 import org.littletonrobotics.junction.LoggedRobot;
 
 /**
@@ -17,6 +19,7 @@ import org.littletonrobotics.junction.LoggedRobot;
  */
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
+  public static CTREConfigs ctreConfigs; 
 
   private RobotContainer m_robotContainer;
 
@@ -29,9 +32,10 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    ctreConfigs = new CTREConfigs();
   }
 
-  /**
+   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
    *
@@ -45,11 +49,14 @@ public class Robot extends LoggedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_robotContainer.reset();
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -57,6 +64,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_robotContainer.reset();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -71,6 +79,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.reset();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -86,6 +95,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void testInit() {
+    m_robotContainer.reset();
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }

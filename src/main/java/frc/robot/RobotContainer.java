@@ -9,6 +9,15 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.SpectrumLib.gamepads.Gamepad;
 
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
+import frc.robot.driver.DriverGamepad;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.drivetrain.DrivetrainConfig.*;
+import frc.robot.drivetrain.SwerveDrivetrain;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -16,7 +25,11 @@ import frc.SpectrumLib.gamepads.Gamepad;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  
+    public static XboxController driverControllerRetro = new XboxController(0);
+    public static DriverGamepad driverGamepad;
+
+    /*Declare Subsystems*/
+    public static SwerveDrivetrain drivetrain;
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -37,6 +50,10 @@ public class RobotContainer {
   private void configureBindings() {
     
   }
+
+  public void reset() {
+    driverGamepad.resetConfig();
+}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
