@@ -2,7 +2,7 @@ package frc.robot.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -17,13 +17,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.drivetrain.DrivetrainConfig.*;
 import frc.robot.CrevoLib.math.Conversions;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 
 
 public class SwerveDrivetrain extends SubsystemBase {
     public SwerveDriveOdometry m_swerveOdometry;
     public SwerveModule[] m_swerveModules;
-    public Pigeon2 m_pigeonGyro;
     public DriveModes currDriveMode;
+    public AHRS m_gyro;
 
     public SwerveModuleState[] setpointState = 
     {
@@ -35,8 +37,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     
     public SwerveDrivetrain(){
-        m_pigeonGyro = new Pigeon2(SwerveDrivetrainConstants.PIGEON_ID);
-        m_pigeonGyro.configFactoryDefault();
+        m_gyro = new AHRS(SerialPort.Port.kUSB1);
         zeroGyro();
         // m_pigeonGyro.setYaw(0);
 
@@ -177,7 +178,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public double getAngle() {
-        return m_pigeonGyro.getYaw();
+        return m_gyro.getYaw();
     }
 
     public double getNonContinuousGyro() {
@@ -200,7 +201,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
 
     public void zeroGyro() {
-        m_pigeonGyro.setYaw(0);
+        m_gyro.zeroYaw();;
     }
 
     public void zeroModules() {
@@ -215,14 +216,14 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     public Rotation2d getYaw() {
         if (SwerveDrivetrainConstants.PIGEON_INVERT) {
-            return Rotation2d.fromDegrees(360 - m_pigeonGyro.getYaw());
+            return Rotation2d.fromDegrees(360 - m_gyro.getYaw());
         } else {
-            return Rotation2d.fromDegrees(m_pigeonGyro.getYaw());
+            return Rotation2d.fromDegrees(m_gyro.getYaw());
         }
     }
 
     public Rotation2d getRoll() {
-        return Rotation2d.fromDegrees(m_pigeonGyro.getRoll());
+        return Rotation2d.fromDegrees(m_gyro.getRoll());
     }
 
     public void resetOdometry(Pose2d pose) {
