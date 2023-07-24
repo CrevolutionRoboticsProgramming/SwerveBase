@@ -14,11 +14,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
+import frc.robot.drivetrain.DrivetrainConfig.SwerveDrivetrainConstants;
 
 public class Drivetrain extends SubsystemBase {
     public SwerveDriveOdometry m_swerveOdometry;
     public SwerveModule[] m_swerveMods;
-    public AHRS m_gyro;
+    public Pigeon2 m_pigeonGyro;
     double pitchDerivative;
     double currentPitch = 0;
     double lastPitch = 0;
@@ -30,7 +31,8 @@ public class Drivetrain extends SubsystemBase {
     BangBangController m_forward_bang_bang, m_reverse_bang_bang;
 
     public Drivetrain() {
-        m_gyro = new AHRS(SerialPort.Port.kUSB1);
+        m_pigeonGyro = new Pigeon2(SwerveDrivetrainConstants.PIGEON_ID);
+        m_pigeonGyro.configFactoryDefault();
         zeroGyro();
 
         m_swerveMods = new SwerveModule[]{
@@ -125,7 +127,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public double getPitch() {
-        return m_gyro.getPitch();
+        return m_pigeonGyro.getPitch();
     }
 
     public SwerveModuleState[] getModuleStates() {
@@ -150,12 +152,12 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void zeroGyro() {
-        m_gyro.zeroYaw();
+        m_pigeonGyro.setYaw(0);
     }
 
     public Rotation2d getYaw() {
-        return (DrivetrainConfig.kGyroInvert) ? Rotation2d.fromDegrees(360 - m_gyro.getYaw()) :
-                Rotation2d.fromDegrees(m_gyro.getYaw());
+        return (DrivetrainConfig.kGyroInvert) ? Rotation2d.fromDegrees(360 - m_pigeonGyro.getYaw()) :
+                Rotation2d.fromDegrees(m_pigeonGyro.getYaw());
     }
 
     public double getPitchDerivative() {
@@ -163,7 +165,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Rotation2d getRoll() {
-        return Rotation2d.fromDegrees(m_gyro.getRoll());
+        return Rotation2d.fromDegrees(m_pigeonGyro.getRoll());
     }
 
     public boolean isPitchDerivativeHigh() {
@@ -191,7 +193,7 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("real robot pose y", getPose().getY());
         SmartDashboard.putNumber("real robot pose rot", getPose().getRotation().getDegrees());
 
-        SmartDashboard.putNumber("Gyro", m_gyro.getYaw());
+        SmartDashboard.putNumber("Gyro", m_pigeonGyro.getYaw());
         SmartDashboard.putNumber("Pitch", getPitch());
 
         lastPitch = currentPitch;
