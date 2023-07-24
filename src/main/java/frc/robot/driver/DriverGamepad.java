@@ -5,18 +5,31 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.SpectrumLib.gamepads.Gamepad;
 import frc.robot.RobotContainer;
+import frc.robot.drivetrain.commands.DrivetrainCommands;
 
 public class DriverGamepad extends Gamepad {
     public DriverGamepad() {
         super("DriverController", DriverConfig.kDriverPort);
+        
+        gamepad.leftStick.setDeadband(0.1);
+        gamepad.rightStick.setDeadband(0.1);
+
+        gamepad.rightStick.configCurves(2, 1);
     }
 
     @Override
     public void setupTeleopButtons() {
-        // Drivetrain Input
-        gamepad.startButton.onTrue(new InstantCommand(() -> RobotContainer.drivetrain.zeroGyro()));
-
         
+        gamepad.leftBumper.onTrue(new InstantCommand(() -> RobotContainer.drivetrain.zeroGyro()));
+        gamepad.selectButton.onTrue(new InstantCommand(() -> RobotContainer.drivetrain.resetModules()));
+
+        // gamepad.rightBumper.whileTrue(new InstantCommand(() -> {while(true)System.out.println("SOMETHING");}));
+
+        gamepad.rightBumper.whileTrue(DrivetrainCommands.driveSlowMode(
+                this::getDriveTranslationX,
+                this::getDriveTranslationY,
+                this::getDriveRotation
+        ));
     }
 
     @Override
@@ -35,23 +48,23 @@ public class DriverGamepad extends Gamepad {
         return gamepad.leftTriggerButton;
     }
 
-    public Trigger intakeCube() {
-        return gamepad.rightTriggerButton.and(shift());
-    }
-
-    public Trigger intakeCone() {
-        return gamepad.rightTriggerButton.and(noShift());
-    }
-
-    public double getIntakePivotOutput() {
-        return gamepad.rightStick.getY();
-    }
-
     public double getRightTriggerRaw() {
         return gamepad.getRawAxis(XboxController.Axis.kRightTrigger.value);
     }
 
     public double getLeftTriggerRaw() {
         return gamepad.getRawAxis(XboxController.Axis.kLeftTrigger.value);
+    }
+
+    public double getDriveTranslationX() {
+        return gamepad.leftStick.getX();
+    }
+
+    public double getDriveTranslationY() {
+        return gamepad.leftStick.getY();
+    }
+
+    public double getDriveRotation() {
+        return gamepad.rightStick.getX();
     }
 }
